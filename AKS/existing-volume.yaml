@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: azure-managed-disk-existing-pv
+  labels:
+    release: "existingdisk"
+spec:
+  capacity:
+    storage: 6Gi
+  storageClassName: manual
+  azureDisk:
+    kind: Managed
+    diskName: snapshot-pvc-d8f33-disk
+    diskURI: /subscriptions/6b80f5aa-b6d1-430e-8772-759a8f1511f1/resourcegroups/MC_experimental-rg_ts-aks-experimental_westus/providers/Microsoft.Compute/disks/snapshot-pvc-d8f33-disk
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain

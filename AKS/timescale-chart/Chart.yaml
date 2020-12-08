@@ -1,0 +1,8 @@
+apiVersion: v2 # version of helm api, v2 for helm3 and v1 for helm2
+name: chart
+description: Helm chart for timescale kubernetes
+keywords:
+    - timescale-provision
+type: application # or lirary
+appVersion: 1.0.0 # application version to deploy
+version: 1.0.0 # chart version

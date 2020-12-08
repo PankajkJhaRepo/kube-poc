@@ -1,0 +1,75 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+parameters:
+  # - name: releasename
+  #   type: string
+  - name: tenant
+    type: string
+  # - name: namespace
+  #   type: string
+  # - name: port
+  #   type: string
+
+
+steps:
+- task: HelmInstaller@0
+  inputs:
+    helmVersion: '3.3.1'
+    installKubectl: true
+    checkLatestHelmVersion: false
+    checkLatestKubectl: true
+    
+- task: AzureKeyVault@1
+  inputs:
+    azureSubscription: 'Visual Studio Enterprise(2)(6b80f5aa-b6d1-430e-8772-759a8f1511f1)'
+    KeyVaultName: 'customer-db-passwords'
+    SecretsFilter: ${{ parameters.tenant }}
+    RunAsPreJob: true
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your PowerShell commands here.
+      # $tenant = "${{ parameters.tenant }}"
+      Write-Host $(${{ parameters.tenant }})
+      #Write-Host $(galore)
+
+- task: HelmDeploy@0
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscription: 'Visual Studio Enterprise(1)(6b80f5aa-b6d1-430e-8772-759a8f1511f1)'
+    azureResourceGroup: 'experimental-rg'
+    kubernetesCluster: 'ts-aks-experimental'
+    useClusterAdmin: true
+    command: 'install'
+    valueFile: ./values.yaml
+    releaseName: ${{ parameters.tenant }}
+    chartType: FilePath
+    chartPath: .
+    overrideValues: "namespace.name=${{ parameters.tenant }},secret.dbPassword=$(${{ parameters.tenant }})"
+    namespace: timescale-releases
+
+# - task: HelmDeploy@0
+#   inputs:
+#     connectionType: 'Azure Resource Manager'
+#     azureSubscription: 'Visual Studio Enterprise(1)(6b80f5aa-b6d1-430e-8772-759a8f1511f1)'
+#     azureResourceGroup: 'experimental-rg'
+#     kubernetesCluster: 'ts-aks-experimental'
+#     useClusterAdmin: true
+#     command: 'upgrade'
+#     releaseName: ingress-nginx
+#     chartName: ingress-nginx
+#     overrideValues: "tcp.${{ parameters.port }}=${{ parameters.tenant }}/${{ parameters.tenant }}-chart-timescale:tcp.${{ parameters.port }}"
+#     namespace: ingress-basic
+

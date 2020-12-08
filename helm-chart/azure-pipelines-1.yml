@@ -1,0 +1,29 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: HelmInstaller@0
+  inputs:
+    helmVersion: '3.3.1'
+    installKubectl: true
+    checkLatestHelmVersion: false
+    checkLatestKubectl: true
+  
+- task: HelmDeploy@0
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscription: 'Visual Studio Enterprise(3)(6b80f5aa-b6d1-430e-8772-759a8f1511f1)'
+    azureResourceGroup: 'experimental-rg'
+    kubernetesCluster: 'ts-aks-experimental'
+    command: 'repo'
+    arguments: 'add ingress-nginx https://kubernetes.github.io/ingress-nginx'
+    namespace: ingress-basic
+

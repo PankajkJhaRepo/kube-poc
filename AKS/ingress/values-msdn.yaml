@@ -1,0 +1,5 @@
+tcp: 
+    "5672": "default/rabbitmq:5672"
+    "15672": "default/rabbitmq:15672"
+    "5432": "galore/galore-chart-timescale:5432"
+    "5433": "galore-1/galore-1-chart-timescale:5433"

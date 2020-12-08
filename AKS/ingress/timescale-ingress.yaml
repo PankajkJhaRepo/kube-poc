@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ts-ingress
+  namespace: ingress-timescale
+  annotations:
+    kubernetes.io/ingress.class: ts-ingress
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: timescale-1
+          servicePort: 5432
+        path: /timescale-1(/|$)(.*)
+      - backend:
+          serviceName: timescale-2
+          servicePort: 5432
+        path: /timescale-2(/|$)(.*)
+      # - backend:
+      #     serviceName: aks-helloworld-one
+      #     servicePort: 80
+      #   path: /(.*)
+---
+# apiVersion: networking.k8s.io/v1beta1
+# kind: Ingress
+# metadata:
+#   name: timescale-ingress-static
+#   namespace: ingress-timescale
+#   annotations:
+#     kubernetes.io/ingress.class: ts-ingress
+#     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+#     nginx.ingress.kubernetes.io/rewrite-target: /static/$2
+# spec:
+#   rules:
+#   - http:
+#       paths:
+#       - backend:
+#           serviceName: aks-helloworld-one
+#           servicePort: 80
+#         path: /static(/|$)(.*)

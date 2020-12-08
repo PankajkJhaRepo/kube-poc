@@ -1,0 +1,11 @@
+namespace:
+    name: tenant
+service:
+    name: timescale
+    type: LoadBalancer
+    port: 5432
+statefulset:
+    replicaCount: 1
+    image:
+        repository: timescale/timescaledb
+        tag: latest-pg12

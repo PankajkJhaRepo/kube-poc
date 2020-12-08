@@ -1,0 +1,16 @@
+    spec:
+      containers:
+      - image: timescale/timescaledb:latest-pg12
+        name: timescale
+        command:
+          - sh
+          - '-c'
+          - timescaledb-tune --conf-path=/var/lib/postgresql/data/dbfiles/postgresql.conf --quiet --yes
+        ports:
+        - containerPort: 5432
+          name: server
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: timescale-volume

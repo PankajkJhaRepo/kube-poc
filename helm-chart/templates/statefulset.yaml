@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: {{.Chart.Name}}
+  name: timescale
+  namespace: {{.Values.namespace.name}}
+spec:
+  replicas: {{.Values.statefulset.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{.Chart.Name}}
+  serviceName: {{.Release.Name}}-{{.Chart.Name}}-{{.Values.service.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Chart.Name}}
+    spec:
+      # initContainers:
+      # - name: init
+      #   image: {{.Values.statefulset.image.repository}}:{{.Values.statefulset.image.tag}}
+      #   command:
+      #     - sh
+      #     - '-c'
+      #     - timescaledb-tune --conf-path=/var/lib/postgresql/data/dbfiles/postgresql.conf --quiet --yes
+      containers:
+      # lifecycle:
+      # postStart:
+      #   exec:
+      - image: {{.Values.statefulset.image.repository}}:{{.Values.statefulset.image.tag}}
+        name: timescale
+        # command:
+        #   - sh
+        #   - '-c'
+        #   - timescaledb-tune --conf-path=/var/lib/postgresql/data/dbfiles/postgresql.conf --quiet --yes
+        # initContainers:
+        ports:
+        - containerPort: 5432
+          name: server
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: timescale-volume
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: {{.Release.Name}}-{{.Chart.Name}}-{{.Values.service.name}}-secret
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_DB
+            value: postgres
+          - name: PGDATA
+            value: "/var/lib/postgresql/data/dbfiles"
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: timescale-volume
+          persistentVolumeClaim:
+            claimName: azure-managed-disk

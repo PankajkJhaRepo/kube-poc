@@ -1,0 +1,2 @@
+tcp: 
+    "5432": "galore/galore-chart-timescale:5432"

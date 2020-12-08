@@ -1,0 +1,15 @@
+namespace:
+    name: tenant
+service:
+    name: timescale
+    type: ClusterIP
+    port: 5432
+statefulset:
+    replicaCount: 1
+    image:
+        repository: timescale/timescaledb
+        tag: latest-pg12
+secret:
+    dbPassword: ""
+storage:
+    size: 20Gi

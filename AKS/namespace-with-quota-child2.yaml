@@ -1,0 +1,7 @@
+apiVersion: hnc.x-k8s.io/v1alpha1
+kind: SubnamespaceAnchor
+metadata:
+  namespace: exp-namespace-quota
+  name: exp-namespace-quota-child2
+  labels:
+    name: valuestream1-customer1

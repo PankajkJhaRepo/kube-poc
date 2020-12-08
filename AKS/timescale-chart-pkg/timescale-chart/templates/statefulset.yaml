@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: timescale
+  name: timescale
+  namespace: {{.Values.namespace.name}}
+spec:
+  replicas: {{.Values.statefulset.replicaCount}}
+  selector:
+    matchLabels:
+      app: timescale
+  serviceName: timescale
+  template:
+    metadata:
+      labels:
+        app: timescale
+    spec:
+      containers:
+      - image: {{.Values.statefulset.image.repository}}:{{.Values.statefulset.image.tag}}
+        name: timescale
+        ports:
+        - containerPort: 5432
+          name: server
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: timescale-volume
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: {{.Release.Name}}-{{.Chart.Name}}-{{.Values.service.name}}-secret
+          - name: POSTGRES_USER
+            value: postgres
+          - name: POSTGRES_DB
+            value: postgres
+          - name: PGDATA
+            value: "/var/lib/postgresql/data/dbfiles"
+      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: timescale-volume
+          persistentVolumeClaim:
+            claimName: azure-managed-disk

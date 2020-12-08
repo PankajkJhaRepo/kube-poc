@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  # namespace: ingress-nginx
+data:
+  9000: "galore/timescale-0:5432"
+  9001: "galore-1/timescale-0:5432"
